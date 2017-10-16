@@ -1,0 +1,22 @@
+<!--
+This file uses the parameters set in prerace and generates a race animation
+
+canvases for currency1, currency2, background
+
+scripts:
+	translational motion animation
+	firebase event handler
+	sprite sheet animation
+-->
+<h2 class="center">{{pair.first.name}} VS {{pair.second.name}}</h2>
+<canvas id="canvas" class="b" height="1000" width="1000"></canvas>
+<script>
+	var sprite1 = new sprite('canvas', pair.first.sprite, 8, 3, 786, 812, 0.5, 5, 0);
+	var sprite2 = new sprite('canvas', pair.second.sprite, 8, 3, 786, 812, 0.5, 5, 400);
+	function gameLoop () {
+		sprite1.render();
+		sprite2.render();
+		if (onrace) window.requestAnimationFrame(gameLoop);
+	}
+	window.requestAnimationFrame(gameLoop);
+</script>

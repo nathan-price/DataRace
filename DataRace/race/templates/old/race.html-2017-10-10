@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>DataRace</title>
+	<meta charset="utf-8">
+	{% load static %}
+	
+	<!-- Angular 1.6.4 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-aria.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-messages.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-route.min.js"></script>
+	<!-- JQuery 3.2.0 -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+	<!-- Material 1.1.0 -->
+	<link rel="stylesheet" href="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.css">
+	<link rel="stylesheet" href="https://material.angularjs.org/1.1.5/docs.css">
+	<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/t-114/svg-assets-cache.js"></script>
+	<script src="https://cdn.gitcdn.link/cdn/angular/bower-material/v1.1.5/angular-material.js"></script>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic">
+	<!-- Toggle -->
+	<link rel="stylesheet" href="{% static "css/toggle.css" %}">
+	
+	{% include "csrf.html" %}
+	
+	<!-- Preload Images -->
+	<script type="text/javascript">
+		<!--//--><![CDATA[//><!--
+			var images = new Array()
+			function preload() {
+				for (i = 0; i < preload.arguments.length; i++) {
+					images[i] = new Image()
+					images[i].src = preload.arguments[i]
+				}
+			}
+			preload(
+				"{% static "race/ca-hockey.png" %}",
+				"{% static "race/jp-ninja.png" %}",
+				"{% static "race/us-liberty.png" %}"
+			)
+		//--><!]]>
+	</script>
+	
+	<style>
+		[ng-cloak] { 
+			display: none !important; 
+		}
+	</style>
+</head>
+
+<body>
+	{% verbatim %}
+	<div ng-app="race" ng-controller="ctrl" ng-cloak class="race">
+		<div layout="column">
+			<div flex>
+				<h1>Data Race</h1>
+			</div>
+			<div id="prerace" hide>
+				<div layout="column" layout-gt-xs="row">
+					<div flex layout="column" class="player-box">
+						<div flex>
+							<h2>Choose Your Racer:</h2>
+						</div>
+						<div>
+							<div flex layout="row" layout-wrap layout-margin >
+								<div flex="noshrink" class="showoption">
+									<div class="showimg">
+										<img src="/static/race/none-blue.png" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="break"></div>
+						<div class="player-selector">
+							<div flex layout="row" layout-wrap layout-margin class="player-choices">
+								<div flex="noshrink" class="cnyoption player-choice">
+									<div class="cnyimg">
+										<img src="/static/race/ca.png" />
+									</div>
+								</div>
+								<div flex="noshrink" class="cnyoption player-choice">
+									<div class="cnyimg">
+										<img src="/static/race/eu.png" />
+									</div>
+								</div>
+								<div flex="noshrink" class="cnyoption player-choice">
+									<div class="cnyimg">
+										<img src="/static/race/gb.png" />
+									</div>
+								</div>
+								<div flex="noshrink" class="cnyoption player-choice">
+									<div class="cnyimg">
+										<img src="/static/race/jp.png" />
+									</div>
+								</div>
+								<div flex="noshrink" class="cnyoption player-choice">
+									<div class="cnyimg">
+										<img src="/static/race/us.png" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="versus">
+						<h2>VS</h2>
+					</div>
+					<div flex layout="column" class="opponant-box">
+						<div flex>
+							<h2>Choose Opponant:</h2>
+						</div>
+						<div>
+							<div flex layout="row" layout-wrap layout-margin >
+								<div flex="noshrink" class="showoption">
+									<div class="showimg">
+										<img src="/static/race/none-red.png" />
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="break"></div>
+						<div class="opponant-selector">
+							<div flex layout="row" layout-wrap layout-margin layout-align="center" class="opponant-choices">
+								<div flex="noshrink" class="cnyoption opponant-choice">
+									<div class="cnyimg">
+										<img src="/static/race/ca.png" />
+									</div>
+								</div>
+								<div flex="noshrink" class="cnyoption opponant-choice">
+									<div class="cnyimg">
+										<img src="/static/race/eu.png" />
+									</div>
+								</div>
+								<div flex="noshrink" class="cnyoption opponant-choice">
+									<div class="cnyimg">
+										<img src="/static/race/gb.png" />
+									</div>
+								</div>
+								<div flex="noshrink" class="cnyoption opponant-choice">
+									<div class="cnyimg">
+										<img src="/static/race/jp.png" />
+									</div>
+								</div>
+								<div flex="noshrink" class="cnyoption opponant-choice">
+									<div class="cnyimg">
+										<img src="/static/race/us.png" />
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="hslider">
+					<md-slider-container flex="" style="height:100%;">
+						<h5>Length</h5>
+						<md-slider ng-model="duration" min="{{durationMin}}" max="{{durationMax}}" aria-label="duration" id="duration-slider" class="md-accent" md-range="" ></md-slider>
+						<md-input-container>
+							<input flex="" type="number" ng-model="duration" aria-label="duration" aria-controls="duration-slider">
+						</md-input-container>
+					</md-slider-container>
+				</div>
+				<div class="hslider">
+					<md-slider-container flex="" style="height:100%;" ng-disabled="true">
+						<h5>Bet</h5>
+						<md-slider ng-model="bet" min="0" max="100" aria-label="bet" id="bet-slider" class="md-accent" md-range=""></md-slider>
+						<md-input-container>
+							<input flex="" type="number" ng-model="bet" aria-label="bet" aria-controls="bet-slider">
+						</md-input-container>
+					</md-slider-container>
+				</div>
+				<div layout class="toggle-container">
+					<h3 flex style="text-align:right;">Random Data</h3>
+					<div flex class="ma">
+						<label class="input-toggle">
+							<input type="checkbox" checked>
+							<span></span>
+						</label>
+					</div>
+					<h3 flex style="text-align:left;">Live Data</h3>
+				</div>
+				<div class="hslider">
+					<md-button class="md-raised">Start Race</md-button>
+				</div>
+			</div>
+			<div id="therace">
+				<div>
+					<canvas id="sprite1"></canvas>
+					<canvas id="sprite2"></canvas>
+				</div>
+			</div>
+		</div>
+		<!--<div class="b">
+			<div class="betslider">
+				<md-slider-container flex="" style="height:100%;" ng-disabled="isDisabled">
+					<md-input-container>
+						<input flex="" type="number" ng-model="bet" aria-label="bet" aria-controls="bet-slider" ng-disabled="true">
+					</md-input-container>
+					<md-slider ng-model="bet" min="-100" max="100" aria-label="bet" id="bet-slider" class="md-accent" md-vertical="" md-range=""  ng-disabled="true"></md-slider>
+					<h5>Bet</h5>
+				</md-slider-container>
+			</div>
+			<div class="durationslider">
+				<md-slider-container flex="" style="height:100%;" ng-disabled="isDisabled">
+					<h5>Length</h5>
+					<md-slider ng-model="duration" min="{{durationMin}}" max="{{durationMax}}" aria-label="duration" id="duration-slider" class="md-accent" md-range="" ></md-slider>
+					<md-input-container>
+						<input flex="" type="number" ng-model="duration" aria-label="duration" aria-controls="duration-slider">
+					</md-input-container>
+				</md-slider-container>
+			</div>
+			<div class="spacer"></div>
+			<div class="selector">
+				<div class="droplist {{preRace}}">
+					<select ng-model="firstselected" ng-change="changedValue(1, firstselected)" data-ng-options="item as item.data.name for item in first.items">
+						<option value="">(Select Currency)</option>
+					</select>
+				</div>
+				<div id="currency1" class="showcase">
+					<div id="firstsprite" class="spritesheet {{first.selection}} sprite{{first.frame}}"></div>
+				</div>
+			</div>
+			<div class="spacer"></div>
+			<div class="selector">
+				<div class="droplist {{preRace}}">
+					<select ng-model="secondselected" ng-change="changedValue(2, secondselected)" data-ng-options="item as item.data.name for item in second.items">
+						<option value="">(Select Currency)</option>
+					</select>
+				</div>
+				<div id="currency2" class="showcase">
+					<div id="secondsprite" class="spritesheet {{second.selection}} sprite{{second.frame}}"></div>
+				</div>
+			</div>
+			<div class="status {{preRace}}" ng-click="clickStart()">
+				<h3 class="vc tc" ng-bind="status"></h3>
+			</div>
+		</div>-->
+		<!--<div ng-bind="ticker"></div>-->
+		<!--<button ng-click="getQuote()">Get Quote</button>-->
+	</div>
+	{% endverbatim %}
+	
+	<script>
+		// SPRITES
+		var Sprites = 
+			{
+				"none": new Image(),
+				"CAD": new Image(),
+				"JPY": new Image(),
+				"USD": new Image()
+			};
+		Sprites.none.src = "{% static "race/none-blue.png" %}";
+		Sprites.CAD.src = "{% static "race/ca-hockey.png" %}";
+		Sprites.JPY.src = "{% static "race/jp-ninja.png" %}";
+		Sprites.USD.src = "{% static "race/us-liberty.png" %}";
+		
+		// RACE
+		function ajaxQuote(ticker) {
+			$.ajax({
+				url : "ajax/",
+				type : "POST",
+				data : {
+					'ticker' : ticker
+				},
+				success: function (result) {
+					var obj = JSON.parse(result.data);
+					console.log(obj[0]);
+					return obj[0];
+				}
+			});
+		}
+		
+		// CURRENCY PAIRS
+		class currencyItem {
+			constructor(name, symbol, code) {
+				this.name = name;
+				this.symbol = symbol;
+				this.code = code;
+			}
+			equals(other) {
+				return this.name == other.name && this.symbol == other.symbol && this.code == other.code;
+			}
+		}
+		class currencyList {
+			constructor() {}
+			add(name, symbol, code) {
+				this[symbol] = new currencyItem(name, symbol, code);
+			}
+		}
+		class currencyPair {
+			constructor(first, second) {
+				this.first = first;
+				this.second = second;
+				this.reversed = false;
+				this.ticker = "NA";
+			}
+			contains(currency) {
+				return this.first.equals(currency) || this.second.equals(currency);
+			}
+			getTicker() {
+				if (!this.isValid()) return "NA";
+				for (let pair of validPairs) {
+					if (this.is(pair)) {
+						this.reversed = this.first.symbol != pair.first.symbol;
+						this.ticker = pair.first.symbol + "/" + pair.second.symbol;
+						return this.ticker;
+					}
+				}
+				return "Not Found";
+			}
+			is(other) {
+				return this.contains(other.first) && this.contains(other.second);
+			}
+			isValid() {
+				return this.first != null && this.second != null;
+			}
+		}
+		
+		// CURRENCIES
+		var currency = new currencyList();
+		currency.add("Canada", "CAD", "ca");
+		currency.add("Japan", "JPY", "jp");
+		currency.add("United States", "USD", "us");
+		currency.add("Euro", "EUR", "eu");
+		currency.add("British Pound", "GBP", "gb");
+		var validPairs = [
+			new currencyPair(currency.CAD, currency.JPY),
+			new currencyPair(currency.USD, currency.CAD),
+			new currencyPair(currency.USD, currency.JPY),
+			new currencyPair(currency.EUR, currency.CAD),
+			new currencyPair(currency.EUR, currency.JPY),
+			new currencyPair(currency.EUR, currency.USD),
+			new currencyPair(currency.EUR, currency.GBP),
+			new currencyPair(currency.GBP, currency.CAD),
+			new currencyPair(currency.GBP, currency.JPY),
+			new currencyPair(currency.GBP, currency.USD)
+		];
+		
+		// ANGULAR
+		var app = angular.module('race', ['ngMaterial', 'ngMessages', 'material.svgAssetsCache']);
+		app.controller('ctrl', function ($scope, $interval, $timeout){
+			$scope.items=[{id:0,data:currency.CAD},{id:1,data:currency.JPY},{id:2,data:currency.USD}];
+			$scope.first = {items: $scope.items.slice(), selection: "sprite-none", frame: 0};
+			$scope.second = {items: $scope.items.slice(), selection: "sprite-none", frame: 0};
+			$scope.selectedPair = new currencyPair(null, null);
+			$scope.ticker = "NA";
+			$scope.tickerValid = false;
+			$scope.bet = 0;
+			$scope.preRace = "";
+			$scope.status = "Select currencies to race";
+			$scope.duration = 20;
+			$scope.durationMin = 10;
+			$scope.durationMax = 60;
+			$scope.started = false;
+			$scope.slide = false;
+			$scope.changedValue = function(changedModel, item){
+				if (changedModel == 1 && item == null) {
+					$scope.selectedPair.first = null;
+					$scope.first = {items: $scope.items.slice(), selection: "sprite-none", frame: 0};
+					$scope.second.items = $scope.items.slice();
+				}
+				else if (changedModel == 2 && item == null) {
+					$scope.selectedPair.second = null;
+					$scope.second = {items: $scope.items.slice(), selection: "sprite-none", frame: 0};
+					$scope.first.items = $scope.items.slice();
+				}
+				else if (changedModel == 1) {
+					$scope.second.items = $scope.items.slice();
+					$scope.second.items.splice(item.id, 1);
+					$scope.selectedPair.first = item.data;
+					if (item.data.code == "us") $scope.first.selection = "sprite-us-liberty";
+					else if (item.data.code == "ca") $scope.first.selection = "sprite-ca-hockey";
+					else if (item.data.code == "jp") $scope.first.selection = "sprite-jp-ninja";
+				}
+				else if (changedModel == 2) {
+					$scope.first.items = $scope.items.slice()
+					$scope.first.items.splice(item.id, 1);
+					$scope.selectedPair.second = item.data;
+					if (item.data.code == "us") $scope.second.selection = "sprite-us-liberty";
+					else if (item.data.code == "ca") $scope.second.selection = "sprite-ca-hockey";
+					else if (item.data.code == "jp") $scope.second.selection = "sprite-jp-ninja";
+				}
+				$scope.ticker = $scope.selectedPair.getTicker();
+				$scope.tickerValid = $scope.ticker != "NA" && $scope.ticker != "Not Found"
+				if ($scope.tickerValid) $scope.status = "Click to start";
+			};
+			$scope.clickStart = function() {
+				if (!$scope.tickerValid) return;
+				$scope.preRace = "hide";
+				$scope.durationMax = $scope.duration + 0;
+				$scope.durationMin = 0;
+				$scope.duration = -1;
+				$scope.started = true;
+				$scope.slide = true;
+				$timeout($scope.raceStart, 1000);
+				console.log("Initial value")
+				$scope.getQuote();
+			}
+			$scope.raceStart = function() {
+				console.log("race start");
+				//$scope.duration = 0;
+				let count = $scope.durationMax;
+				$interval($scope.raceTick, 1000, count);
+			}
+			$scope.raceEnd = function() {
+				console.log("race end");
+				$scope.started = false;
+				$scope.duration = $scope.durationMax;
+				$scope.durationMax = 60;
+				$scope.durationMin = 10;
+				$scope.preRace = "";
+			}
+			$scope.raceTick = function() {
+				console.log("Trial "+$scope.duration);
+				$scope.getQuote();
+				$scope.duration++;
+				if ($scope.duration >= $scope.durationMax) $scope.raceEnd();
+			}
+			$scope.getQuote = function () {
+				if ($scope.tickerValid) ajaxQuote($scope.ticker);
+			};
+			$scope.addFrame = function() {
+				if ($scope.first.selection != "sprite-none") $scope.first.frame = ($scope.first.frame + 1) % 8;
+				if ($scope.second.selection != "sprite-none") $scope.second.frame = ($scope.second.frame + 1) % 8;
+				if ($scope.slide) $scope.duration = 0;
+				if ($scope.duration == 0) $scope.slide = false;
+			}
+			$interval($scope.addFrame, 100);
+		});
+		
+		// UTILITY
+		function arrayRemove(array, element) {
+			let index = array.indexOf(element);
+			if (index > -1) array.splice(index, 1); 
+		}
+	</script>
+</body>
+
+</html>

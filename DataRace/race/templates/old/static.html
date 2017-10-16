@@ -1,0 +1,16 @@
+{% load static %}
+<!-- Preload Images -->
+<script>
+	var images = new Array()
+	function preload() {
+		for (i = 0; i < preload.arguments.length; i++) {
+			images[i] = new Image()
+			images[i].src = preload.arguments[i]
+		}
+	}
+	preload(
+		"{% static "img/ca-hockey.png" %}",
+		"{% static "img/jp-ninja.png" %}",
+		"{% static "img/us-liberty.png" %}"
+	)
+</script>

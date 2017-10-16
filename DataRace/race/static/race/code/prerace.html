@@ -1,0 +1,49 @@
+<!-- 
+This file sets up the race parameters: Currency Pair, Length
+If the user is logged in it will show profile data and set a Bet
+
+Droplists with filtering
+
+slider with race duration
+
+(if logged in bet slider)
+
+race start button 
+
+scripts:
+	currency pair logic
+	droplist logic
+-->
+<link rel="stylesheet" href="static/race/code/prerace.css">
+<h2 class="center">Settings</h2>
+<div layout="column" layout-padding>
+	<div layout layout-padding>
+		<div class="slider-label">Race Length</div>
+		<md-slider-container flex>
+			<md-slider ng-model="duration" min="10" max="60" aria-label="duration" id="duration-slider" class="md-accent" md-range="" ></md-slider>
+			<md-input-container>
+				<input flex="" type="number" ng-model="duration" aria-label="duration" aria-controls="duration-slider">
+			</md-input-container>
+		</md-slider-container>
+		<div class="slider-units">seconds</div>
+	</div>
+	<div layout layout-padding>
+		<div flex layout="column">
+			<h4>Your Currency</h4>
+			<md-select flex ng-model="pair.first" ng-change="pair.change(true)" aria-label="player" placeholder="Choose your currency">
+				<md-option ng-repeat="currency in pair.firstChoices | orderBy:'name'" ng-value="currency">
+					{{currency.name}}
+				</md-option>
+			</md-select>
+		</div>
+		<div flex layout="column">
+			<h4>Your Opponant</h4>
+			<md-select flex ng-model="pair.second" ng-change="pair.change(false)" aria-label="opponant" placeholder="Choose your opponant">
+				<md-option ng-repeat="currency in pair.secondChoices | orderBy:'name'"" ng-value="currency">
+					{{currency.name}}
+				</md-option>
+			</md-select>
+		</div>
+	</div>
+	<md-button class="md-raised md-accent" ng-disabled="!pair.isValid()" ng-click="start()">Start Race</md-button>
+</div>
